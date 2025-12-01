@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+opex_data.csv
+opex_analysis_report.xlsx
