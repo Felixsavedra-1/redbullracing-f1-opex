@@ -28,14 +28,15 @@ This project models Operating Expenses (OPEX) for Oracle Red Bull Racing, utiliz
 
 2. **Run Analysis**:
    ```bash
-   python main.py
+   python3 main.py
    ```
 
 3. **View Report**:
    - Open `opex_analysis_report.xlsx` to see the results.
+   - If `xlsxwriter` isn't installed, the script will skip Excel output and print a message.
 
 ## Technologies Used
 - Python
 - Pandas
-- XlsxWriter
+- XlsxWriter (optional for Excel output)
 - NumPy

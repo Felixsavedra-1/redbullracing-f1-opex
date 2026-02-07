@@ -10,7 +10,7 @@ def calculate_variance(df: pd.DataFrame) -> pd.DataFrame:
     """Add absolute and percentage variance columns."""
     df = df.copy()
     df["Variance"] = df["Actual Amount"] - df["Budgeted Amount"]
-    df["Variance %"] = (df["Variance"] / df["Budgeted Amount"]) * 100
+    df["Variance %"] = df["Variance"] / df["Budgeted Amount"]
     return df
 
 
@@ -26,7 +26,7 @@ def analyze_department_spending(df: pd.DataFrame) -> pd.DataFrame:
             }
         )
     )
-    grouped["Variance %"] = (grouped["Variance"] / grouped["Budgeted Amount"]) * 100
+    grouped["Variance %"] = grouped["Variance"] / grouped["Budgeted Amount"]
     return grouped.sort_values("Variance", ascending=False)
 
 
@@ -37,7 +37,7 @@ def identify_savings_opportunities(df: pd.DataFrame) -> list[dict]:
     """
     opportunities: list[dict] = []
 
-    high_variance = df[(df["Variance %"] > 50) & (df["Variance"] > 5000)]
+    high_variance = df[(df["Variance %"] > 0.5) & (df["Variance"] > 5000)]
     if not high_variance.empty:
         opportunities.append(
             {
@@ -50,13 +50,17 @@ def identify_savings_opportunities(df: pd.DataFrame) -> list[dict]:
             }
         )
 
-    duplicates = df[df.duplicated(subset=["Date", "Vendor", "Actual Amount"], keep=False)]
+    dup_keys = ["Date", "Vendor", "Actual Amount"]
+    duplicates = df[df.duplicated(subset=dup_keys, keep=False)]
     if not duplicates.empty:
+        grouped_dups = duplicates.groupby(dup_keys)["Actual Amount"]
+        # Savings are all but one payment per duplicate group.
+        potential_savings = (grouped_dups.sum() - grouped_dups.max()).sum()
         opportunities.append(
             {
                 "Type": "Potential Duplicate Payments",
                 "Count": len(duplicates),
-                "Potential Savings": duplicates["Actual Amount"].sum() / 2,
+                "Potential Savings": potential_savings,
                 "Details": duplicates[
                     ["Date", "Vendor", "Description", "Actual Amount"]
                 ].to_dict("records"),
