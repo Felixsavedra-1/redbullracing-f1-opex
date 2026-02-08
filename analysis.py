@@ -1,6 +1,12 @@
 import pandas as pd
 
 
+def _safe_divide(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
+    """Divide with zero protection, returning 0 when denominator is 0."""
+    safe_denominator = denominator.replace(0, pd.NA)
+    return (numerator / safe_denominator).fillna(0)
+
+
 def load_data(filepath: str) -> pd.DataFrame:
     """Load OPEX data from CSV."""
     return pd.read_csv(filepath, parse_dates=["Date"])
@@ -10,7 +16,7 @@ def calculate_variance(df: pd.DataFrame) -> pd.DataFrame:
     """Add absolute and percentage variance columns."""
     df = df.copy()
     df["Variance"] = df["Actual Amount"] - df["Budgeted Amount"]
-    df["Variance %"] = df["Variance"] / df["Budgeted Amount"]
+    df["Variance %"] = _safe_divide(df["Variance"], df["Budgeted Amount"])
     return df
 
 
@@ -26,7 +32,7 @@ def analyze_department_spending(df: pd.DataFrame) -> pd.DataFrame:
             }
         )
     )
-    grouped["Variance %"] = grouped["Variance"] / grouped["Budgeted Amount"]
+    grouped["Variance %"] = _safe_divide(grouped["Variance"], grouped["Budgeted Amount"])
     return grouped.sort_values("Variance", ascending=False)
 
 

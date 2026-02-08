@@ -41,20 +41,28 @@ VENDORS: Sequence[str] = [
 ]
 
 
-def generate_opex_data(num_records: int = 500, year: int = 2024) -> pd.DataFrame:
+def generate_opex_data(
+    num_records: int = 500,
+    year: int = 2024,
+    seed: int | None = 42,
+) -> pd.DataFrame:
     """Simulate transactional OPEX data for a single calendar year."""
+    if num_records < 3:
+        raise ValueError("num_records must be at least 3 to inject demo anomalies.")
+
+    rng = random.Random(seed)
     start_date = datetime(year, 1, 1)
     data: list[dict] = []
 
     for _ in range(num_records):
-        dept = random.choice(DEPARTMENTS)
-        expense = random.choice(EXPENSE_TYPES[dept])
-        vendor = random.choice(VENDORS)
+        dept = rng.choice(DEPARTMENTS)
+        expense = rng.choice(EXPENSE_TYPES[dept])
+        vendor = rng.choice(VENDORS)
 
-        date = start_date + timedelta(days=random.randint(0, 364))
-        budget = round(random.uniform(1_000, 100_000), 2)
-        variance_factor = random.normalvariate(1.0, 0.15)
-        actual = round(budget * variance_factor, 2)
+        date = start_date + timedelta(days=rng.randint(0, 364))
+        budget = round(rng.uniform(1_000, 100_000), 2)
+        variance_factor = rng.normalvariate(1.0, 0.15)
+        actual = round(max(0.0, budget * variance_factor), 2)
 
         data.append(
             {
