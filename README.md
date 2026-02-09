@@ -12,6 +12,14 @@ This project models Operating Expenses (OPEX) for Oracle Red Bull Racing, utiliz
     - Dynamic Charts.
     - Summary Pivot-like tables.
 
+## Methodology
+- **Variance Analysis**: Compute absolute and percentage variance between actuals and budget by transaction.
+- **Department Rollup**: Aggregate budget, actuals, and variance by department for leadership-level visibility.
+- **Opportunity Detection**:
+  - **High-Variance Outliers**: Large overspends based on both percentage and absolute thresholds.
+  - **Potential Duplicate Payments**: Same date, vendor, and amount occurring multiple times.
+- **Reporting**: Surface insights in an Excel dashboard with conditional formatting and charts.
+
 ## Project Structure
 - `main.py`: Orchestrates the entire workflow.
 - `data_generator.py`: Generates the synthetic `opex_data.csv`.
@@ -35,6 +43,12 @@ This project models Operating Expenses (OPEX) for Oracle Red Bull Racing, utiliz
    - Open `opex_analysis_report.xlsx` to see the results.
    - If `xlsxwriter` isn't installed, the script will skip Excel output and print a message.
 
+## Tests
+Run the analysis tests with:
+```bash
+python3 -m unittest
+```
+
 ## CLI Options
 You can control data volume and reproducibility:
 ```bash
@@ -45,4 +59,3 @@ python3 main.py --records 1000 --year 2025 --seed 123 --csv-path opex_data.csv
 - Python
 - Pandas
 - XlsxWriter (optional for Excel output)
-- NumPy

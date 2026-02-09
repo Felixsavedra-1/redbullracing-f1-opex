@@ -8,7 +8,7 @@ import excel_reporter
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the F1 OPEX analysis pipeline.")
     parser.add_argument("--records", type=int, default=500, help="Number of records to generate.")
-    parser.add_argument("--year", type=int, default=2024, help="Year to simulate.")
+    parser.add_argument("--year", type=int, default=2025, help="Year to simulate.")
     parser.add_argument(
         "--seed",
         type=int,
@@ -25,7 +25,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    print("Starting F1 Red Bull OPEX analysis.")
+    print("Starting F1 Red Bull OPEX analysis...")
 
     print("Generating synthetic data...")
     df = data_generator.generate_opex_data(
@@ -43,7 +43,7 @@ def main() -> None:
 
     print("Building Excel report...")
     excel_reporter.create_excel_report(df, dept_summary, opportunities)
-    print("Analysis complete.")
+    print("Analysis complete! 🏎️💨")
 
 
 if __name__ == "__main__":

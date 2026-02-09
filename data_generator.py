@@ -43,7 +43,7 @@ VENDORS: Sequence[str] = [
 
 def generate_opex_data(
     num_records: int = 500,
-    year: int = 2024,
+    year: int = 2025,
     seed: int | None = 42,
 ) -> pd.DataFrame:
     """Simulate transactional OPEX data for a single calendar year."""

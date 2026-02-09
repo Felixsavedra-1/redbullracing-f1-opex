@@ -1,3 +1,5 @@
+import importlib.util
+
 import pandas as pd
 
 
@@ -8,9 +10,7 @@ def create_excel_report(
     output_file: str = "opex_analysis_report.xlsx",
 ) -> None:
     """Write an Excel workbook summarizing department spend and flagged items."""
-    try:
-        import xlsxwriter  # noqa: F401  # used indirectly by pandas ExcelWriter
-    except ImportError:
+    if importlib.util.find_spec("xlsxwriter") is None:
         print(
             "Excel report skipped: missing optional dependency 'xlsxwriter'. "
             "Install it to generate opex_analysis_report.xlsx."
