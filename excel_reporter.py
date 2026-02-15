@@ -2,11 +2,13 @@ import importlib.util
 
 import pandas as pd
 
+Opportunity = dict[str, object]
+
 
 def create_excel_report(
     df: pd.DataFrame,
     dept_summary: pd.DataFrame,
-    opportunities: list[dict],
+    opportunities: list[Opportunity],
     output_file: str = "opex_analysis_report.xlsx",
 ) -> None:
     """Write an Excel workbook summarizing department spend and flagged items."""
@@ -25,6 +27,8 @@ def create_excel_report(
         workbook = writer.book
 
         header_fmt = workbook.add_format({"bold": True, "bg_color": "#D3D3D3", "border": 1})
+        title_fmt = workbook.add_format({"bold": True, "font_size": 14})
+        bold_fmt = workbook.add_format({"bold": True})
         currency_fmt = workbook.add_format({"num_format": "$#,##0.00"})
         percent_fmt = workbook.add_format({"num_format": "0.00%"})
         red_fmt = workbook.add_format({"bg_color": "#FFC7CE", "font_color": "#9C0006"})
@@ -33,12 +37,7 @@ def create_excel_report(
         dept_summary.to_excel(writer, sheet_name="Executive Summary", index=False, startrow=1)
         worksheet = writer.sheets["Executive Summary"]
 
-        worksheet.write(
-            0,
-            0,
-            "Departmental OPEX Overview",
-            workbook.add_format({"bold": True, "font_size": 14}),
-        )
+        worksheet.write(0, 0, "Departmental OPEX Overview", title_fmt)
 
         worksheet.set_column("A:A", 20)
         worksheet.set_column("B:C", 15, currency_fmt)
@@ -83,16 +82,11 @@ def create_excel_report(
         worksheet.insert_chart("G2", chart)
 
         worksheet_opp = workbook.add_worksheet("Savings Opportunities")
-        worksheet_opp.write(
-            0,
-            0,
-            "Identified Cost Savings Opportunities",
-            workbook.add_format({"bold": True, "font_size": 14}),
-        )
+        worksheet_opp.write(0, 0, "Identified Cost Savings Opportunities", title_fmt)
 
         row = 2
         for opp in opportunities:
-            worksheet_opp.write(row, 0, f"Type: {opp['Type']}", workbook.add_format({"bold": True}))
+            worksheet_opp.write(row, 0, f"Type: {opp['Type']}", bold_fmt)
             worksheet_opp.write(
                 row,
                 1,

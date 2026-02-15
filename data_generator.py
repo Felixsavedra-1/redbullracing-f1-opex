@@ -41,6 +41,18 @@ VENDORS: Sequence[str] = [
 ]
 
 
+def _inject_demo_anomalies(df: pd.DataFrame) -> None:
+    """Insert deterministic anomalies used by analysis and tests."""
+    df.loc[0, "Department"] = "Logistics"
+    df.loc[0, "Expense Type"] = "Freight - Air"
+    df.loc[0, "Budgeted Amount"] = 50_000
+    df.loc[0, "Actual Amount"] = 120_000
+    df.loc[0, "Description"] = "Emergency Air Freight - Urgent Upgrade Package"
+
+    df.loc[1] = df.loc[2].copy()
+    df.loc[1, "Description"] = f"{df.loc[2, 'Description']} (DUPLICATE?)"
+
+
 def generate_opex_data(
     num_records: int = 500,
     year: int = 2025,
@@ -52,6 +64,7 @@ def generate_opex_data(
 
     rng = random.Random(seed)
     start_date = datetime(year, 1, 1)
+    days_in_year = (datetime(year + 1, 1, 1) - start_date).days
     data: list[dict] = []
 
     for _ in range(num_records):
@@ -59,7 +72,7 @@ def generate_opex_data(
         expense = rng.choice(EXPENSE_TYPES[dept])
         vendor = rng.choice(VENDORS)
 
-        date = start_date + timedelta(days=rng.randint(0, 364))
+        date = start_date + timedelta(days=rng.randint(0, days_in_year - 1))
         budget = round(rng.uniform(1_000, 100_000), 2)
         variance_factor = rng.normalvariate(1.0, 0.15)
         actual = round(max(0.0, budget * variance_factor), 2)
@@ -77,16 +90,7 @@ def generate_opex_data(
         )
 
     df = pd.DataFrame(data)
-
-    df.loc[0, "Department"] = "Logistics"
-    df.loc[0, "Expense Type"] = "Freight - Air"
-    df.loc[0, "Budgeted Amount"] = 50_000
-    df.loc[0, "Actual Amount"] = 120_000
-    df.loc[0, "Description"] = "Emergency Air Freight - Urgent Upgrade Package"
-
-    df.loc[1] = df.loc[2].copy()
-    df.loc[1, "Description"] = df.loc[2, "Description"] + " (DUPLICATE?)"
-
+    _inject_demo_anomalies(df)
     return df
 
 

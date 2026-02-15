@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from typing import cast
-
 import pandas as pd
-from pandas import Series
 
 
 HIGH_VARIANCE_PCT = 0.5
@@ -13,7 +10,7 @@ HIGH_VARIANCE_AMOUNT = 5000
 DUPLICATE_KEYS = ("Date", "Vendor", "Actual Amount")
 
 
-def _safe_divide(numerator: Series, denominator: Series) -> Series:
+def _safe_divide(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
     """Divide with zero protection, returning 0 when denominator is 0."""
     safe_denominator = denominator.replace(0, pd.NA)
     return (numerator / safe_denominator).fillna(0)
@@ -27,11 +24,9 @@ def load_data(filepath: str) -> pd.DataFrame:
 def calculate_variance(df: pd.DataFrame) -> pd.DataFrame:
     """Add absolute and percentage variance columns."""
     df = df.copy()
-    df["Variance"] = df["Actual Amount"] - df["Budgeted Amount"]
-    df["Variance %"] = _safe_divide(
-        cast(Series, df["Variance"]),
-        cast(Series, df["Budgeted Amount"]),
-    )
+    variance = df["Actual Amount"] - df["Budgeted Amount"]
+    df["Variance"] = variance
+    df["Variance %"] = _safe_divide(variance, df["Budgeted Amount"])
     return df
 
 
@@ -47,11 +42,8 @@ def analyze_department_spending(df: pd.DataFrame) -> pd.DataFrame:
             }
         )
     )
-    grouped["Variance %"] = _safe_divide(
-        cast(Series, grouped["Variance"]),
-        cast(Series, grouped["Budgeted Amount"]),
-    )
-    return grouped.sort_values("Variance", ascending=False)
+    grouped["Variance %"] = _safe_divide(grouped["Variance"], grouped["Budgeted Amount"])
+    return grouped.sort_values("Variance", ascending=False, ignore_index=True)
 
 
 def identify_savings_opportunities(df: pd.DataFrame) -> list[dict[str, object]]:
@@ -61,10 +53,9 @@ def identify_savings_opportunities(df: pd.DataFrame) -> list[dict[str, object]]:
     """
     opportunities: list[dict[str, object]] = []
 
-    high_variance = df[
-        (df["Variance %"] > HIGH_VARIANCE_PCT)
-        & (df["Variance"] > HIGH_VARIANCE_AMOUNT)
-    ]
+    overspend_mask = (df["Budgeted Amount"] > 0) & (df["Variance %"] > HIGH_VARIANCE_PCT)
+    unbudgeted_mask = (df["Budgeted Amount"] == 0) & (df["Variance"] > 0)
+    high_variance = df[(overspend_mask | unbudgeted_mask) & (df["Variance"] > HIGH_VARIANCE_AMOUNT)]
     if not high_variance.empty:
         opportunities.append(
             {
@@ -80,12 +71,13 @@ def identify_savings_opportunities(df: pd.DataFrame) -> list[dict[str, object]]:
     duplicates = df[df.duplicated(subset=list(DUPLICATE_KEYS), keep=False)]
     if not duplicates.empty:
         grouped_dups = duplicates.groupby(list(DUPLICATE_KEYS))["Actual Amount"]
+        duplicate_count = int((grouped_dups.size() - 1).sum())
         # Savings are all but one payment per duplicate group.
         potential_savings = (grouped_dups.sum() - grouped_dups.max()).sum()
         opportunities.append(
             {
                 "Type": "Potential Duplicate Payments",
-                "Count": len(duplicates),
+                "Count": duplicate_count,
                 "Potential Savings": potential_savings,
                 "Details": duplicates[
                     ["Date", "Vendor", "Description", "Actual Amount"]

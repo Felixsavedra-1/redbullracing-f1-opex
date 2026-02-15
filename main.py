@@ -20,6 +20,11 @@ def parse_args() -> argparse.Namespace:
         default="opex_data.csv",
         help="Where to write the generated CSV.",
     )
+    parser.add_argument(
+        "--report-path",
+        default="opex_analysis_report.xlsx",
+        help="Where to write the Excel report.",
+    )
     return parser.parse_args()
 
 
@@ -34,16 +39,21 @@ def main() -> None:
         seed=args.seed,
     )
     df.to_csv(args.csv_path, index=False)
+    df = analysis.load_data(args.csv_path)
 
     print("Running variance analysis...")
-    df = analysis.load_data(args.csv_path)
     df = analysis.calculate_variance(df)
     dept_summary = analysis.analyze_department_spending(df)
     opportunities = analysis.identify_savings_opportunities(df)
 
     print("Building Excel report...")
-    excel_reporter.create_excel_report(df, dept_summary, opportunities)
-    print("Analysis complete! 🏎️💨")
+    excel_reporter.create_excel_report(
+        df,
+        dept_summary,
+        opportunities,
+        output_file=args.report_path,
+    )
+    print("Analysis complete.")
 
 
 if __name__ == "__main__":

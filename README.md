@@ -46,13 +46,13 @@ This project models Operating Expenses (OPEX) for Oracle Red Bull Racing, utiliz
 ## Tests
 Run the analysis tests with:
 ```bash
-python3 -m unittest
+python3 -m unittest discover -s tests
 ```
 
 ## CLI Options
 You can control data volume and reproducibility:
 ```bash
-python3 main.py --records 1000 --year 2025 --seed 123 --csv-path opex_data.csv
+python3 main.py --records 1000 --year 2025 --seed 123 --csv-path opex_data.csv --report-path opex_analysis_report.xlsx
 ```
 
 ## Technologies Used
