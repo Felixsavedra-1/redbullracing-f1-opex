@@ -18,7 +18,7 @@ VIEW_H = 560
 SCALE = 2
 FPS = 12
 OUT_W = 720
-MAX_COLORS = 96
+MAX_COLORS = 256
 
 TOP_HOLD_FRAMES = 24
 SCROLL_FRAMES = 120
@@ -104,7 +104,7 @@ def build_gif(frame_dir: Path) -> None:
             "-i",
             str(palette),
             "-lavfi",
-            f"{vf}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3",
+            f"{vf}[x];[x][1:v]paletteuse=dither=sierra2_4a",
             str(OUT_GIF),
         ],
         check=True,
