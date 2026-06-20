@@ -10,6 +10,7 @@
   <a href="https://github.com/Felixsavedra-1/redbullracing-opex/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Felixsavedra-1/redbullracing-opex/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white" alt="CI status" /></a>
   <img src="https://img.shields.io/badge/python-3.11-3776AB?logo=python&logoColor=white" alt="Python 3.11" />
   <img src="https://img.shields.io/badge/mypy-strict-2a6db0" alt="mypy strict" />
+  <img src="https://img.shields.io/badge/lint-ruff-D7FF64?logo=ruff&logoColor=black" alt="ruff" />
   <img src="https://img.shields.io/badge/tests-21%20passing-brightgreen" alt="21 tests passing" />
 </p>
 
@@ -21,9 +22,9 @@ F1 teams run complex, multi-department budgets across hundreds of monthly transa
 - **Typed end-to-end** — `TypedDict` on every pipeline output, validated by `mypy --strict` with **zero suppressions**, so type errors surface at dev time, not runtime.
 - **Self-contained dashboard** — one `f1opex_dashboard.html` with plotly.js inlined; opens offline in any browser with full hover/zoom interactivity.
 - **Honest failures** — a custom exception hierarchy with distinct exit codes (1 = expected error, 2 = bug) and boundary column validation before any computation runs.
-- **CI-verified** — black, `mypy --strict`, and **21 tests** run on Python 3.11 and 3.12 on every push.
+- **CI-verified** — ruff (format + lint), `mypy --strict`, and **21 tests** run on Python 3.11 and 3.12 on every push.
 
-**Stack:** Python 3.11 · pandas · numpy · xlsxwriter · plotly · pytest · mypy (strict) · black
+**Stack:** Python 3.11 · pandas · numpy · xlsxwriter · plotly · pytest · mypy (strict) · ruff
 
 ## Quickstart
 
@@ -146,7 +147,7 @@ generate_opex_data()
 pytest -v   # 21 tests
 ```
 
-CI runs black (format check), `mypy --strict`, and the full suite on Python 3.11 and 3.12 on every push and pull request.
+CI runs ruff (format check + lint), `mypy --strict`, and the full suite on Python 3.11 and 3.12 on every push and pull request.
 
 </details>
 

@@ -15,6 +15,4 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
-
-[tool.black]
-line-length = 100
+ignore = ["E501"]

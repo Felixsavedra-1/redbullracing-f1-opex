@@ -326,7 +326,7 @@ def _details_table(details: list[dict[str, Any]]) -> str:
                 cells.append(f"<td>{value}</td>")
         rows.append(f"<tr>{''.join(cells)}</tr>")
     more = "" if len(details) <= 12 else f'<div class="more">+ {len(details) - 12} more…</div>'
-    return f"<table><thead><tr>{head}</tr></thead>" f"<tbody>{''.join(rows)}</tbody></table>{more}"
+    return f"<table><thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table>{more}"
 
 
 def _data_payload(
@@ -1041,7 +1041,7 @@ def build_dashboard_html(
         '<span class="brand-by">Powered by Claude</span></div>'
         '<div class="title">RED BULL RACING &mdash; F1 OPEX</div>'
         f'<div class="sub">Operational expenditure cockpit &middot; FY{year} &middot; '
-        f'{kpis["num_transactions"]:,} transactions &middot; generated {generated}</div>'
+        f"{kpis['num_transactions']:,} transactions &middot; generated {generated}</div>"
         '</div><div class="right">'
         '<div class="live"><span class="dot"></span>Live</div>'
         f'<div class="badge">FY{year}</div>'
@@ -1076,7 +1076,7 @@ def build_dashboard_html(
             ),
             _kpi_card(
                 "Total Variance",
-                f'{arrow} {compact_money(abs(kpis["total_variance"]))}',
+                f"{arrow} {compact_money(abs(kpis['total_variance']))}",
                 COLOR_DASH_CRIMSON,
                 idx=2,
                 value_class=vcls,
@@ -1087,7 +1087,7 @@ def build_dashboard_html(
             ),
             _kpi_card(
                 "Variance %",
-                f'{arrow} {abs(kpis["variance_pct"]):.1%}',
+                f"{arrow} {abs(kpis['variance_pct']):.1%}",
                 COLOR_DASH_CRIMSON,
                 idx=3,
                 value_class=vcls,
@@ -1107,7 +1107,7 @@ def build_dashboard_html(
             ),
             _kpi_card(
                 "Opportunities",
-                f'{kpis["num_opportunities"]}',
+                f"{kpis['num_opportunities']}",
                 COLOR_DASH_TAN,
                 idx=5,
                 kpi_id="num_opportunities",
@@ -1127,7 +1127,7 @@ def build_dashboard_html(
             ),
             _kpi_card(
                 "Transactions",
-                f'{kpis["num_transactions"]:,}',
+                f"{kpis['num_transactions']:,}",
                 COLOR_DASH_TAN,
                 idx=7,
                 kpi_id="transactions",
@@ -1244,8 +1244,7 @@ def build_dashboard_html(
 
     payload = _data_payload(dept_summary, monthly_trend, kpis, df)
     scripts = (
-        f'<script id="opex-data" type="application/json">{payload}</script>'
-        f"<script>{_JS}</script>"
+        f'<script id="opex-data" type="application/json">{payload}</script><script>{_JS}</script>'
     )
 
     return (
