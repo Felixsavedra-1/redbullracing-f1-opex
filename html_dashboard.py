@@ -446,8 +446,6 @@ body { margin: 0; color: $FG; font-family: $FONT; -webkit-font-smoothing: antial
 .brand { display: flex; flex-direction: column; gap: 1px; margin-bottom: 10px; line-height: 1.1; }
 .brand-name { font-size: 13px; font-weight: 800; letter-spacing: .18em;
               color: $FG; }
-.brand-by { font-size: 9.5px; font-weight: 700; letter-spacing: .26em;
-            text-transform: uppercase; color: $ACCENT; }
 .banner .title { font-size: 27px; font-weight: 800; letter-spacing: .04em; position: relative;
                  overflow: hidden; text-shadow: 0 0 22px rgba(179,18,43,.30); }
 .banner .title::after { content: ""; position: absolute; top: 0; left: -60%; width: 55%; height: 100%;
@@ -1037,8 +1035,7 @@ def build_dashboard_html(
     generated = datetime.now().strftime("%d %b %Y")
     banner = (
         '<div class="banner hud reveal"><div>'
-        '<div class="brand"><span class="brand-name">Vedra Research</span>'
-        '<span class="brand-by">Powered by Claude</span></div>'
+        '<div class="brand"><span class="brand-name">Vedra Research</span></div>'
         '<div class="title">RED BULL RACING &mdash; F1 OPEX</div>'
         f'<div class="sub">Operational expenditure cockpit &middot; FY{year} &middot; '
         f"{kpis['num_transactions']:,} transactions &middot; generated {generated}</div>"

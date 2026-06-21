@@ -13,16 +13,16 @@ ROOT = Path(__file__).resolve().parent.parent
 HTML = ROOT / "f1opex_dashboard.html"
 OUT_GIF = ROOT / "dashboard.gif"
 
-VIEW_W = 1000
-VIEW_H = 560
+VIEW_W = 1200
+VIEW_H = 502
 SCALE = 2
-FPS = 12
-OUT_W = 720
+FPS = 16
+OUT_W = 1200
 MAX_COLORS = 256
 
-TOP_HOLD_FRAMES = 24
-SCROLL_FRAMES = 120
-BOTTOM_HOLD_FRAMES = 18
+TOP_HOLD_FRAMES = 12
+SCROLL_FRAMES = 60
+BOTTOM_HOLD_FRAMES = 12
 
 
 def _ease(p: float) -> float:
