@@ -30,7 +30,7 @@ def test_build_dashboard_html_contains_branding_and_kpis() -> None:
     )
 
     assert html.startswith("<!DOCTYPE html>")
-    assert "RED BULL RACING" in html
+    assert "Vedra Research" in html
     assert "FY2025" in html
     for caption in (
         "Total Budget",
@@ -78,6 +78,20 @@ def test_build_dashboard_html_contains_interactive_scaffolding() -> None:
         assert f'id="{div_id}"' in html
 
 
+def test_build_dashboard_html_escapes_untrusted_values() -> None:
+    df, dept_summary, _, monthly_trend, _ = _pipeline_outputs()
+    payload = "<script>alert(1)</script>"
+    df = df.copy()
+    df.loc[df.index[-1], "Description"] = payload
+    opportunities = analysis.identify_savings_opportunities(df)
+    kpis = analysis.compute_kpis(df, opportunities)
+    html = html_dashboard.build_dashboard_html(
+        dept_summary, opportunities, monthly_trend, kpis, year=2025, df=df
+    )
+    assert payload not in html
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html
+
+
 def test_write_dashboard_creates_file() -> None:
     df, dept_summary, opportunities, monthly_trend, kpis = _pipeline_outputs()
     with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as tmp:
@@ -90,7 +104,7 @@ def test_write_dashboard_creates_file() -> None:
         with open(tmp_path, encoding="utf-8") as handle:
             content = handle.read()
         assert "<html" in content
-        assert "RED BULL RACING" in content
+        assert "Vedra Research" in content
     finally:
         os.unlink(tmp_path)
 

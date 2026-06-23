@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import html
 import json
-from datetime import datetime
 from string import Template
 from typing import Any
 
@@ -25,6 +25,10 @@ from constants import (
     COLOR_DASH_TITANIUM,
     COLOR_NEGATIVE,
     COLOR_POSITIVE,
+    COLOR_SITE_BONE,
+    COLOR_SITE_GOLD,
+    COLOR_SITE_GOLD_DIM,
+    COLOR_SITE_LINE,
     DASH_FONT,
 )
 from exceptions import DashboardError
@@ -42,6 +46,10 @@ _DEPT_PALETTE: tuple[str, ...] = (
 )
 
 _PLOTLY_CONFIG: dict[str, Any] = {"displayModeBar": False, "responsive": True}
+
+
+def _esc(value: Any) -> str:
+    return html.escape(str(value))
 
 
 def _dept_color_map(dept_summary: pd.DataFrame) -> dict[str, str]:
@@ -312,7 +320,7 @@ def _details_table(details: list[dict[str, Any]]) -> str:
     if not details:
         return '<div class="more">No line-item detail available.</div>'
     cols = list(details[0].keys())
-    head = "".join(f"<th>{c}</th>" for c in cols)
+    head = "".join(f"<th>{_esc(c)}</th>" for c in cols)
     rows = []
     for record in details[:12]:
         cells = []
@@ -323,7 +331,7 @@ def _details_table(details: list[dict[str, Any]]) -> str:
             elif col == "Date":
                 cells.append(f"<td>{pd.to_datetime(value).strftime('%d %b %Y')}</td>")
             else:
-                cells.append(f"<td>{value}</td>")
+                cells.append(f"<td>{_esc(value)}</td>")
         rows.append(f"<tr>{''.join(cells)}</tr>")
     more = "" if len(details) <= 12 else f'<div class="more">+ {len(details) - 12} more…</div>'
     return f"<table><thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table>{more}"
@@ -390,7 +398,7 @@ def _data_payload(
             "bg": COLOR_DASH_BG,
         },
     }
-    return json.dumps(payload)
+    return json.dumps(payload).replace("<", "\\u003c")
 
 
 _CSS = Template("""
@@ -435,39 +443,18 @@ body { margin: 0; color: $FG; font-family: $FONT; -webkit-font-smoothing: antial
           transition-delay: calc(var(--i,0) * 55ms); }
 .reveal.in { opacity: 1; transform: none; }
 
-.banner { display: flex; align-items: center; justify-content: space-between; gap: 18px;
-          background:
-            repeating-linear-gradient(-45deg, rgba(236,229,213,.016) 0 2px, transparent 2px 6px),
-            linear-gradient(135deg, $CHARCOAL, #0C0D0F);
-          border: 1px solid rgba(236,229,213,.09);
-          border-radius: 18px; padding: 22px 28px;
-          box-shadow: 0 12px 34px rgba(0,0,0,.40), inset 0 1px 0 rgba(236,229,213,.06),
-                      inset 0 0 0 1px rgba(179,18,43,.14), 0 0 38px rgba(179,18,43,.10); }
-.brand { display: flex; flex-direction: column; gap: 1px; margin-bottom: 10px; line-height: 1.1; }
-.brand-name { font-size: 13px; font-weight: 800; letter-spacing: .18em;
-              color: $FG; }
-.banner .title { font-size: 27px; font-weight: 800; letter-spacing: .04em; position: relative;
-                 overflow: hidden; text-shadow: 0 0 22px rgba(179,18,43,.30); }
-.banner .title::after { content: ""; position: absolute; top: 0; left: -60%; width: 55%; height: 100%;
-                 background: linear-gradient(90deg, transparent, rgba(236,229,213,.30), transparent);
-                 transform: skewX(-20deg); animation: sweep 5.5s ease-in-out infinite; }
-@keyframes sweep { 0%,14% { left: -60%; } 55%,100% { left: 135%; } }
-.banner .sub { color: $MUTED; font-size: 13px; margin-top: 6px; letter-spacing: .02em; }
-.right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
-.live { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700;
-        letter-spacing: .24em; text-transform: uppercase; color: $ACCENT; }
-.live .dot { width: 8px; height: 8px; border-radius: 50%; background: $ACCENT;
-             box-shadow: 0 0 8px $ACCENT, 0 0 16px $ACCENT; animation: blink 1.6s ease-in-out infinite; }
-@keyframes blink { 0%,100% { opacity: 1; box-shadow: 0 0 8px $ACCENT, 0 0 16px rgba(179,18,43,.6); }
-                   50% { opacity: .45; box-shadow: 0 0 4px rgba(179,18,43,.4); } }
-.badge { font-size: 26px; font-weight: 800; color: $FG; letter-spacing: .04em;
-         border: 1px solid $CRIMSON; border-radius: 12px; padding: 10px 16px;
-         background: rgba(179,18,43,.08); box-shadow: 0 0 20px rgba(179,18,43,.14); }
-.tele { display: inline-flex; align-items: center; gap: 9px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px;
-        letter-spacing: .14em; color: $MUTED; }
-.tele .ok { color: $POS; }
-.tele .sep { color: rgba(236,229,213,.22); }
+.sitebar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+           background: rgba(10,10,11,.74); -webkit-backdrop-filter: blur(10px);
+           backdrop-filter: blur(10px); border: 1px solid $SITE_LINE;
+           border-radius: 14px; padding: 0 22px; height: 64px; margin-bottom: 18px; }
+.sitebar .mark { justify-self: start; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                 font-size: 14px; letter-spacing: .14em; color: $SITE_BONE; }
+.sitebar .hdr-anim { justify-self: center; width: 88px; height: 55px;
+                     border: 1px solid $SITE_LINE; border-radius: 2px;
+                     background: linear-gradient(180deg, #141417, #0A0A0B); opacity: .95; }
+.badge { justify-self: end; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+         font-size: 13px; letter-spacing: .12em; color: $SITE_GOLD;
+         border: 1px solid $SITE_GOLD_DIM; border-radius: 8px; padding: 7px 12px; }
 
 .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 22px 0; }
 .kpi { background: linear-gradient(180deg, rgba(43,46,51,.48), rgba(10,11,13,.82));
@@ -607,7 +594,7 @@ body { margin: 0; color: $FG; font-family: $FONT; -webkit-font-smoothing: antial
 }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .fx .scan, .fx .pulse, .banner .title::after, .live .dot,
+  .fx .scan, .fx .pulse,
   .mixwrap .ring { animation: none !important; }
 }
 """)
@@ -676,13 +663,6 @@ _JS = """
       if (p < 1) requestAnimationFrame(step); else el.textContent = fin;
     }
     requestAnimationFrame(step);
-  }
-
-  function tickClock() {
-    var el = document.getElementById('hud-clock');
-    if (!el) return;
-    function f() { el.textContent = new Date().toISOString().slice(11, 19) + ' UTC'; }
-    f(); setInterval(f, 1000);
   }
 
   function axisStyle(extra) {
@@ -990,10 +970,6 @@ _JS = """
     }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 
-    var title = document.querySelector('.banner .title');
-    if (title) decode(title);
-    tickClock();
-
     document.querySelectorAll('.val[data-target]').forEach(function (e) {
       var to = parseFloat(e.dataset.target);
       if (reduce) { e.dataset.cur = to; }
@@ -1003,6 +979,51 @@ _JS = """
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
   else wire();
+})();
+
+(function () {
+  var c = document.querySelector('.hdr-anim'); if (!c) return;
+  var ctx = c.getContext('2d'), W = c.width, H = c.height;
+  var GOLD = '178,58,58', GREY = '140,140,147', BONE_RGB = '232,227,214';
+
+  function grid(ctx, W, H) {
+    ctx.strokeStyle = 'rgba(38,38,43,0.85)'; ctx.lineWidth = 1;
+    for (var x = 0; x <= W; x += W / 8) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (var y = 0; y <= H; y += H / 8) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  }
+  function dot(ctx, x, y, r, fill) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill(); }
+  function glow(ctx, x, y, r, rgb, a) {
+    var g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, 'rgba(' + rgb + ',' + a + ')'); g.addColorStop(1, 'rgba(' + rgb + ',0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  }
+
+  var bbase = [0.45, 0.64, 0.52, 0.78, 0.60, 0.82, 0.68];
+  function drawBars(ctx, W, H, t) {
+    grid(ctx, W, H);
+    var n = bbase.length, padX = W * 0.1, plotW = W - 2 * padX, slot = plotW / n, gap = slot * 0.34, bw = slot - gap;
+    var baseY = H * 0.84, topY = H * 0.16, span = baseY - topY, budget = 0.74, byv = baseY - budget * span;
+    ctx.save(); ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(padX, byv); ctx.lineTo(W - padX, byv);
+    ctx.strokeStyle = 'rgba(' + BONE_RGB + ',0.42)'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore();
+    for (var i = 0; i < n; i++) {
+      var h = bbase[i] + 0.17 * Math.sin(t * 1.7 + i * 0.8); if (h < 0.06) h = 0.06; if (h > 0.97) h = 0.97;
+      var x = padX + i * slot + gap * 0.5, hpx = h * span, y = baseY - hpx, over = h > budget;
+      var g = ctx.createLinearGradient(0, y, 0, baseY);
+      g.addColorStop(0, 'rgba(' + GOLD + ',' + (over ? 0.60 : 0.34) + ')');
+      g.addColorStop(1, 'rgba(' + GOLD + ',0.04)');
+      ctx.fillStyle = g; ctx.fillRect(x, y, bw, hpx);
+      if (over) { glow(ctx, x + bw / 2, y, bw * 0.95, GOLD, 0.5); }
+      ctx.strokeStyle = 'rgba(' + GOLD + ',' + (over ? 0.95 : 0.7) + ')'; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + bw, y); ctx.stroke();
+      if (over) { dot(ctx, x + bw / 2, y - 4, 1.8, 'rgba(' + GOLD + ',0.95)'); }
+    }
+    ctx.beginPath(); ctx.moveTo(padX, baseY); ctx.lineTo(W - padX, baseY);
+    ctx.strokeStyle = 'rgba(' + GREY + ',0.45)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { drawBars(ctx, W, H, 2); return; }
+  var t = 0;
+  (function loop() { t += 0.011; ctx.clearRect(0, 0, W, H); drawBars(ctx, W, H, t); requestAnimationFrame(loop); })();
 })();
 """
 
@@ -1030,20 +1051,18 @@ def build_dashboard_html(
         GLOW=COLOR_DASH_GLOW,
         NEON=COLOR_DASH_NEON,
         SCAN=COLOR_DASH_SCAN,
+        SITE_BONE=COLOR_SITE_BONE,
+        SITE_GOLD=COLOR_SITE_GOLD,
+        SITE_GOLD_DIM=COLOR_SITE_GOLD_DIM,
+        SITE_LINE=COLOR_SITE_LINE,
     )
 
-    generated = datetime.now().strftime("%d %b %Y")
     banner = (
-        '<div class="banner hud reveal"><div>'
-        '<div class="brand"><span class="brand-name">Vedra Research</span></div>'
-        '<div class="title">RED BULL RACING &mdash; F1 OPEX</div>'
-        f'<div class="sub">Operational expenditure cockpit &middot; FY{year} &middot; '
-        f"{kpis['num_transactions']:,} transactions &middot; generated {generated}</div>"
-        '</div><div class="right">'
-        '<div class="live"><span class="dot"></span>Live</div>'
+        '<header class="sitebar reveal">'
+        '<span class="mark">Vedra Research</span>'
+        '<canvas class="hdr-anim" width="256" height="160" aria-hidden="true"></canvas>'
         f'<div class="badge">FY{year}</div>'
-        '<div class="tele"><span class="ok">SYS ONLINE</span><span class="sep">/</span>'
-        '<span id="hud-clock">--:--:-- UTC</span></div></div></div>'
+        "</header>"
     )
 
     over = kpis["total_variance"] > 0
@@ -1156,11 +1175,11 @@ def build_dashboard_html(
         '<div class="callouts">'
         '<div class="callout best reveal"><div>'
         f'<div class="lab">{best_label}</div>'
-        f'<div class="dn">{best["Department"]}</div></div>'
+        f'<div class="dn">{_esc(best["Department"])}</div></div>'
         f'<div class="cv {best_cls}">{compact_money(best["Variance"])}</div></div>'
         '<div class="callout worst reveal"><div>'
         f'<div class="lab">{worst_label}</div>'
-        f'<div class="dn">{worst["Department"]}</div></div>'
+        f'<div class="dn">{_esc(worst["Department"])}</div></div>'
         f'<div class="cv {worst_cls}">{compact_money(worst["Variance"])}</div></div>'
         "</div></div>"
     )
@@ -1184,9 +1203,9 @@ def build_dashboard_html(
 
     color_map = _dept_color_map(dept_summary)
     chips = "".join(
-        f'<button class="chip on" data-dept="{dept}">'
+        f'<button class="chip on" data-dept="{_esc(dept)}">'
         f'<span class="cdot" style="background:{color_map[str(dept)]}"></span>'
-        f"{dept}</button>"
+        f"{_esc(dept)}</button>"
         for dept in dept_summary["Department"]
     )
     filterbar = (
@@ -1221,7 +1240,7 @@ def build_dashboard_html(
     if opportunities:
         saves = "".join(
             '<div class="save hud reveal" data-drill>'
-            f'<div class="saveclick"><div><div class="t">{opp["Type"]}</div>'
+            f'<div class="saveclick"><div><div class="t">{_esc(opp["Type"])}</div>'
             f'<div class="n">{opp["Count"]} item(s) flagged &middot; click to inspect</div></div>'
             f'<div class="amt">{compact_money(opp["Potential Savings"])}</div></div>'
             '<div class="chev">&#9662;</div>'

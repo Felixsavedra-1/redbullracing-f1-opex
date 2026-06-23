@@ -45,3 +45,8 @@ COLOR_DASH_GLOW: str = "rgba(179,18,43,0.45)"
 COLOR_DASH_NEON: str = "#D6203F"
 COLOR_DASH_SCAN: str = "rgba(214,32,63,0.06)"
 DASH_FONT: str = "Inter, 'Segoe UI', Helvetica, Arial, sans-serif"
+
+COLOR_SITE_BONE: str = "#E8E3D6"
+COLOR_SITE_GOLD: str = "#C6A15B"
+COLOR_SITE_GOLD_DIM: str = "#6e5c34"
+COLOR_SITE_LINE: str = "#26262B"

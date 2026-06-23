@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/python-3.11-3776AB?logo=python&logoColor=white" alt="Python 3.11" />
   <img src="https://img.shields.io/badge/mypy-strict-2a6db0" alt="mypy strict" />
   <img src="https://img.shields.io/badge/lint-ruff-D7FF64?logo=ruff&logoColor=black" alt="ruff" />
-  <img src="https://img.shields.io/badge/tests-21%20passing-brightgreen" alt="21 tests passing" />
+  <img src="https://img.shields.io/badge/tests-22%20passing-brightgreen" alt="22 tests passing" />
 </p>
 
 F1 teams run complex, multi-department budgets across hundreds of monthly transactions. This pipeline ingests (or generates) OPEX data and flags overspends and duplicate payments, then produces two executive-ready deliverables from one typed analysis — a branded **Excel workbook** and a self-contained interactive **HTML dashboard**, both opening on a cockpit view.
@@ -22,7 +22,7 @@ F1 teams run complex, multi-department budgets across hundreds of monthly transa
 - **Typed end-to-end** — `TypedDict` on every pipeline output, validated by `mypy --strict` with **zero suppressions**, so type errors surface at dev time, not runtime.
 - **Self-contained dashboard** — one `f1opex_dashboard.html` with plotly.js inlined; opens offline in any browser with full hover/zoom interactivity.
 - **Honest failures** — a custom exception hierarchy with distinct exit codes (1 = expected error, 2 = bug) and boundary column validation before any computation runs.
-- **CI-verified** — ruff (format + lint), `mypy --strict`, and **21 tests** run on Python 3.11 and 3.12 on every push.
+- **CI-verified** — ruff (format + lint), `mypy --strict`, and **22 tests** run on Python 3.11 and 3.12 on every push.
 
 **Stack:** Python 3.11 · pandas · numpy · xlsxwriter · plotly · pytest · mypy (strict) · ruff
 
@@ -134,7 +134,7 @@ generate_opex_data()
 - **Vectorized RNG** — `numpy.random.default_rng(seed)` makes every synthetic dataset fully reproducible across platforms and Python versions
 - **Fail-fast column validation** — `_validate_columns()` guards every pipeline stage before any computation runs; bad data is rejected at the boundary, not mid-aggregation
 - **Per-step timing** — `TimerContext` context manager profiles each phase without cluttering business logic; visible with `--verbose`
-- **21 tests** — variance math, rollup correctness, KPI aggregation, anomaly detection, date bounds, schema validation, Excel structure (5 sheets / 7 charts) via `zipfile`, and HTML dashboard content (branding, KPI tiles, chart divs, self-contained bundle, interactive scaffolding)
+- **22 tests** — variance math, rollup correctness, KPI aggregation, anomaly detection, date bounds, schema validation, Excel structure (5 sheets / 7 charts) via `zipfile`, HTML dashboard content (branding, KPI tiles, chart divs, self-contained bundle, interactive scaffolding), and HTML-escaping of untrusted values
 
 </details>
 
@@ -144,7 +144,7 @@ generate_opex_data()
 <br/>
 
 ```bash
-pytest -v   # 21 tests
+pytest -v   # 22 tests
 ```
 
 CI runs ruff (format check + lint), `mypy --strict`, and the full suite on Python 3.11 and 3.12 on every push and pull request.
