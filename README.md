@@ -153,6 +153,13 @@ CI runs ruff (format check + lint), `mypy --strict`, and the full suite on Pytho
 
 ---
 
-<p align="center">
-  <img src="VRcompany.png" width="50%" alt="Red Bull Racing" />
-</p>
+<table align="center" width="100%">
+<tr>
+<td width="50%" align="center" valign="middle">
+  <img src="VRcompany.png" width="92%" alt="Red Bull Racing" />
+</td>
+<td width="50%" align="center" valign="middle">
+  <img src="vr05.gif" width="92%" alt="VR-05 — animated bar-chart visual: crimson overspend bars breathing over a budget reference line" />
+</td>
+</tr>
+</table>
