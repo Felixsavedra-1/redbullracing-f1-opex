@@ -12,7 +12,6 @@ import plotly.io as pio
 from analysis import KpiSummary, Opportunity
 from constants import (
     COLOR_DASH_BG,
-    COLOR_DASH_CHARCOAL,
     COLOR_DASH_CRIMSON,
     COLOR_DASH_FG,
     COLOR_DASH_GLOW,
@@ -1042,8 +1041,6 @@ def build_dashboard_html(
         FONT=DASH_FONT,
         GRID=COLOR_DASH_GRID,
         MUTED=COLOR_DASH_MUTED,
-        SURFACE=COLOR_DASH_SURFACE,
-        CHARCOAL=COLOR_DASH_CHARCOAL,
         ACCENT=COLOR_DASH_CRIMSON,
         CRIMSON=COLOR_DASH_CRIMSON,
         POS=COLOR_POSITIVE,
