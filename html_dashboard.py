@@ -35,13 +35,13 @@ from formatting import compact_money
 
 _DEPT_PALETTE: tuple[str, ...] = (
     "#B3122B",
-    "#C7A06A",
+    "#3671C6",
     "#9DA3A8",
     "#D2696E",
-    "#C9B9A6",
+    "#6FA8DC",
     "#6E7378",
     "#8E0E22",
-    "#ECE5D5",
+    "#A9C7E8",
 )
 
 _PLOTLY_CONFIG: dict[str, Any] = {"displayModeBar": False, "responsive": True}
