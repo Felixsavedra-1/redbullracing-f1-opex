@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 HTML = ROOT / "f1opex_dashboard.html"
-OUT_GIF = ROOT / "dashboard.gif"
+OUT_GIF = ROOT / "assets" / "dashboard.gif"
 
 VIEW_W = 1200
 VIEW_H = 502
